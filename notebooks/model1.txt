@@ -1,0 +1,17 @@
+# ######
+first run: 
+Accuracy: 0.4561
+Log Loss: 1.0634
+
+Classification Report:
+              precision    recall  f1-score   support
+
+    Home Win       0.49      0.74      0.59       194
+        Draw       0.00      0.00      0.00       122
+    Away Win       0.41      0.46      0.44       140
+
+    accuracy                           0.46       456
+   macro avg       0.30      0.40      0.34       456
+weighted avg       0.33      0.46      0.38       456
+
+Notes: seems unable to identify a draw?
