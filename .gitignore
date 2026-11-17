@@ -218,3 +218,9 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Raw datasets
+data/raw/
+
+# Virtual environments
+.venv/
