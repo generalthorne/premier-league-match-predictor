@@ -1,0 +1,212 @@
+Feature Importance:
+                  Feature  Importance
+        ShotsOnTargetDiff    0.057200
+        AwayTeam_Man City    0.039630
+      HomeTeam_Man United    0.039555
+      AwayTeam_Man United    0.031833
+               PointsDiff    0.029557
+         HomeTeam_Everton    0.029150
+AwayTeam_Sheffield United    0.024869
+             HomeGoalDiff    0.024863
+        HomeTeam_Man City    0.024557
+             AwayAvgShots    0.023811
+     AwayTeam_Aston Villa    0.023302
+          HomeTeam_Fulham    0.022839
+         AwayTeam_Arsenal    0.022449
+             HomeAvgShots    0.022119
+     HomeTeam_Aston Villa    0.021111
+            HomeAvgPoints    0.020754
+          AwayTeam_Fulham    0.020504
+         HomeTeam_Arsenal    0.020346
+          GoalsScoredDiff    0.019727
+       HomeTeam_Tottenham    0.019057
+         HomeTeam_Watford    0.019000
+         HomeTeam_Burnley    0.018810
+           HomeTeam_Leeds    0.018471
+             AwayGoalDiff    0.018449
+        HomeTeam_Brighton    0.018066
+       HomeTeam_Liverpool    0.017690
+     HomeAvgShotsOnTarget    0.017685
+HomeTeam_Sheffield United    0.017228
+        AwayTeam_West Ham    0.017211
+            AwayAvgPoints    0.016681
+        AwayTeam_Brighton    0.016229
+     AwayAvgShotsOnTarget    0.016123
+         HomeTeam_Norwich    0.016018
+        HomeTeam_West Ham    0.014984
+       HomeAvgGoalsScored    0.014825
+       AwayTeam_Liverpool    0.014812
+  AwayTeam_Crystal Palace    0.014696
+     AwayTeam_Southampton    0.014425
+     AwayAvgGoalsConceded    0.014120
+       AwayAvgGoalsScored    0.014018
+         HomeTeam_Chelsea    0.013945
+          HomeTeam_Wolves    0.013724
+   AwayTeam_Nott'm Forest    0.013619
+     HomeAvgGoalsConceded    0.013585
+         AwayTeam_Chelsea    0.013257
+           AwayTeam_Leeds    0.012947
+       HomeTeam_Newcastle    0.012868
+  HomeTeam_Crystal Palace    0.012547
+       HomeTeam_Brentford    0.011494
+         AwayTeam_Norwich    0.011277
+         AwayTeam_Burnley    0.003964
+   HomeTeam_Nott'm Forest    0.000000
+           HomeTeam_Luton    0.000000
+       HomeTeam_Leicester    0.000000
+     HomeTeam_Bournemouth    0.000000
+       HomeTeam_West Brom    0.000000
+     AwayTeam_Bournemouth    0.000000
+       AwayTeam_Brentford    0.000000
+     HomeTeam_Southampton    0.000000
+         AwayTeam_Everton    0.000000
+       AwayTeam_Newcastle    0.000000
+       AwayTeam_Leicester    0.000000
+           AwayTeam_Luton    0.000000
+       AwayTeam_Tottenham    0.000000
+         AwayTeam_Watford    0.000000
+       AwayTeam_West Brom    0.000000
+          AwayTeam_Wolves    0.000000
+
+
+
+Now running permutation importance: 
+Feature Importance:
+                  Feature  Importance
+        ShotsOnTargetDiff    0.057200
+        AwayTeam_Man City    0.039630
+      HomeTeam_Man United    0.039555
+      AwayTeam_Man United    0.031833
+               PointsDiff    0.029557
+         HomeTeam_Everton    0.029150
+AwayTeam_Sheffield United    0.024869
+             HomeGoalDiff    0.024863
+        HomeTeam_Man City    0.024557
+             AwayAvgShots    0.023811
+     AwayTeam_Aston Villa    0.023302
+          HomeTeam_Fulham    0.022839
+         AwayTeam_Arsenal    0.022449
+             HomeAvgShots    0.022119
+     HomeTeam_Aston Villa    0.021111
+            HomeAvgPoints    0.020754
+          AwayTeam_Fulham    0.020504
+         HomeTeam_Arsenal    0.020346
+          GoalsScoredDiff    0.019727
+       HomeTeam_Tottenham    0.019057
+         HomeTeam_Watford    0.019000
+         HomeTeam_Burnley    0.018810
+           HomeTeam_Leeds    0.018471
+             AwayGoalDiff    0.018449
+        HomeTeam_Brighton    0.018066
+       HomeTeam_Liverpool    0.017690
+     HomeAvgShotsOnTarget    0.017685
+HomeTeam_Sheffield United    0.017228
+        AwayTeam_West Ham    0.017211
+            AwayAvgPoints    0.016681
+        AwayTeam_Brighton    0.016229
+     AwayAvgShotsOnTarget    0.016123
+         HomeTeam_Norwich    0.016018
+        HomeTeam_West Ham    0.014984
+       HomeAvgGoalsScored    0.014825
+       AwayTeam_Liverpool    0.014812
+  AwayTeam_Crystal Palace    0.014696
+     AwayTeam_Southampton    0.014425
+     AwayAvgGoalsConceded    0.014120
+       AwayAvgGoalsScored    0.014018
+         HomeTeam_Chelsea    0.013945
+          HomeTeam_Wolves    0.013724
+   AwayTeam_Nott'm Forest    0.013619
+     HomeAvgGoalsConceded    0.013585
+         AwayTeam_Chelsea    0.013257
+           AwayTeam_Leeds    0.012947
+       HomeTeam_Newcastle    0.012868
+  HomeTeam_Crystal Palace    0.012547
+       HomeTeam_Brentford    0.011494
+         AwayTeam_Norwich    0.011277
+         AwayTeam_Burnley    0.003964
+   HomeTeam_Nott'm Forest    0.000000
+           HomeTeam_Luton    0.000000
+       HomeTeam_Leicester    0.000000
+     HomeTeam_Bournemouth    0.000000
+       HomeTeam_West Brom    0.000000
+     AwayTeam_Bournemouth    0.000000
+       AwayTeam_Brentford    0.000000
+     HomeTeam_Southampton    0.000000
+         AwayTeam_Everton    0.000000
+       AwayTeam_Newcastle    0.000000
+       AwayTeam_Leicester    0.000000
+           AwayTeam_Luton    0.000000
+       AwayTeam_Tottenham    0.000000
+         AwayTeam_Watford    0.000000
+       AwayTeam_West Brom    0.000000
+          AwayTeam_Wolves    0.000000
+
+Permutation Importance:
+                  Feature  Importance      Std
+             AwayAvgShots    0.007428 0.008503
+       AwayAvgGoalsScored    0.006238 0.004075
+        ShotsOnTargetDiff    0.004054 0.007902
+               PointsDiff    0.003852 0.003134
+             HomeAvgShots    0.003302 0.003191
+         HomeTeam_Arsenal    0.002366 0.001127
+            HomeAvgPoints    0.002359 0.001691
+        HomeTeam_Brighton    0.002125 0.001437
+       HomeTeam_Liverpool    0.001673 0.001991
+       AwayTeam_Liverpool    0.001527 0.000910
+         HomeTeam_Burnley    0.001285 0.000930
+       HomeTeam_Tottenham    0.001146 0.003862
+AwayTeam_Sheffield United    0.001042 0.000586
+     AwayTeam_Aston Villa    0.000989 0.000403
+        HomeTeam_Man City    0.000872 0.002205
+     HomeAvgShotsOnTarget    0.000761 0.001430
+         AwayTeam_Arsenal    0.000609 0.003092
+     HomeAvgGoalsConceded    0.000515 0.002400
+       HomeAvgGoalsScored    0.000463 0.001204
+HomeTeam_Sheffield United    0.000455 0.000551
+      HomeTeam_Man United    0.000451 0.000671
+     AwayTeam_Southampton    0.000332 0.000512
+       HomeTeam_Newcastle    0.000208 0.000401
+     HomeTeam_Aston Villa    0.000116 0.000122
+     AwayAvgGoalsConceded    0.000103 0.001579
+       HomeTeam_Leicester    0.000000 0.000000
+           HomeTeam_Luton    0.000000 0.000000
+     HomeTeam_Southampton    0.000000 0.000000
+       HomeTeam_West Brom    0.000000 0.000000
+         HomeTeam_Norwich    0.000000 0.000000
+   HomeTeam_Nott'm Forest    0.000000 0.000000
+     HomeTeam_Bournemouth    0.000000 0.000000
+           HomeTeam_Leeds    0.000000 0.000000
+         AwayTeam_Everton    0.000000 0.000000
+         AwayTeam_Burnley    0.000000 0.000000
+          AwayTeam_Wolves    0.000000 0.000000
+       AwayTeam_West Brom    0.000000 0.000000
+       AwayTeam_Tottenham    0.000000 0.000000
+         AwayTeam_Watford    0.000000 0.000000
+       AwayTeam_Leicester    0.000000 0.000000
+           AwayTeam_Luton    0.000000 0.000000
+       AwayTeam_Brentford    0.000000 0.000000
+     AwayTeam_Bournemouth    0.000000 0.000000
+           AwayTeam_Leeds    0.000000 0.000000
+         HomeTeam_Watford    0.000000 0.000000
+       AwayTeam_Newcastle    0.000000 0.000000
+         AwayTeam_Norwich    0.000000 0.000000
+          HomeTeam_Wolves   -0.000009 0.000060
+  AwayTeam_Crystal Palace   -0.000019 0.000148
+         AwayTeam_Chelsea   -0.000031 0.000074
+          AwayTeam_Fulham   -0.000082 0.000229
+       HomeTeam_Brentford   -0.000113 0.000164
+  HomeTeam_Crystal Palace   -0.000140 0.000560
+            AwayAvgPoints   -0.000144 0.002297
+        AwayTeam_Brighton   -0.000193 0.000236
+          HomeTeam_Fulham   -0.000246 0.000592
+         HomeTeam_Everton   -0.000255 0.000277
+        HomeTeam_West Ham   -0.000509 0.000026
+        AwayTeam_West Ham   -0.000662 0.000567
+      AwayTeam_Man United   -0.000675 0.000751
+        AwayTeam_Man City   -0.000972 0.002902
+     AwayAvgShotsOnTarget   -0.001364 0.001779
+             AwayGoalDiff   -0.001505 0.002250
+         HomeTeam_Chelsea   -0.001667 0.001413
+          GoalsScoredDiff   -0.001799 0.003558
+             HomeGoalDiff   -0.002180 0.002949
+   AwayTeam_Nott'm Forest   -0.002225 0.001848

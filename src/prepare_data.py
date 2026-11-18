@@ -5,7 +5,9 @@ from sklearn.preprocessing import OneHotEncoder
 
 DATA_DIR = Path("data/processed")
 
+
 FEATURE_COLUMNS = [
+    # Previous five-match averages
     "HomeAvgGoalsScored",
     "HomeAvgGoalsConceded",
     "HomeAvgShots",
@@ -15,28 +17,87 @@ FEATURE_COLUMNS = [
     "AwayAvgGoalsConceded",
     "AwayAvgShots",
     "AwayAvgShotsOnTarget",
-    "AwayAvgPoints"
+    "AwayAvgPoints",
+
+    # New ten-match averages
+    "HomeAvg10GoalsScored",
+    "HomeAvg10GoalsConceded",
+    "HomeAvg10Shots",
+    "HomeAvg10ShotsOnTarget",
+    "HomeAvg10Points",
+    "AwayAvg10GoalsScored",
+    "AwayAvg10GoalsConceded",
+    "AwayAvg10Shots",
+    "AwayAvg10ShotsOnTarget",
+    "AwayAvg10Points",
+
+    # Comparative features
+    "PointsDiff",
+    "ShotsOnTargetDiff",
+
+    # Season-to-date averages
+    "HomeSeasonAvgPoints",
+    "HomeSeasonAvgGoalsScored",
+    "HomeSeasonAvgGoalsConceded",
+    "AwaySeasonAvgPoints",
+    "AwaySeasonAvgGoalsScored",
+    "AwaySeasonAvgGoalsConceded",
+
+    # Season matches played
+    "HomeSeasonMatchesPlayed",
+    "AwaySeasonMatchesPlayed",
+
+    "HomeHomeAvgPoints",
+    "AwayAwayAvgPoints",
+
+    "HomeHomeAvgGoalsScored",
+    "HomeHomeAvgGoalsConceded",
+    "AwayAwayAvgGoalsScored",
+    "AwayAwayAvgGoalsConceded"  
 ]
 
 
-def prepare_data():
-    """Prepare training and testing data for model training."""
 
-    train_data = pd.read_csv(DATA_DIR / "train.csv")
-    test_data = pd.read_csv(DATA_DIR / "test.csv")
+def prepare_data():
+    """Prepare training and validation data for model training."""
+
+    train_data = pd.read_csv(DATA_DIR / "train_split.csv")
+    validation_data = pd.read_csv(DATA_DIR / "validation.csv")
+
+    # Create comparative features
+    for data in [train_data, validation_data]:
+        data["HomeGoalDiff"] = (
+            data["HomeAvgGoalsScored"] - data["HomeAvgGoalsConceded"]
+        )
+
+        data["AwayGoalDiff"] = (
+            data["AwayAvgGoalsScored"] - data["AwayAvgGoalsConceded"]
+        )
+
+        data["PointsDiff"] = (
+            data["HomeAvgPoints"] - data["AwayAvgPoints"]
+        )
+
+        data["GoalsScoredDiff"] = (
+            data["HomeAvgGoalsScored"] - data["AwayAvgGoalsScored"]
+        )
+
+        data["ShotsOnTargetDiff"] = (
+            data["HomeAvgShotsOnTarget"] - data["AwayAvgShotsOnTarget"]
+        )
 
     # Separate numerical and categorical features
     X_train_numeric = train_data[FEATURE_COLUMNS]
-    X_test_numeric = test_data[FEATURE_COLUMNS]
+    X_validation_numeric = validation_data[FEATURE_COLUMNS]
 
     X_train_teams = train_data[["HomeTeam", "AwayTeam"]]
-    X_test_teams = test_data[["HomeTeam", "AwayTeam"]]
+    X_validation_teams = validation_data[["HomeTeam", "AwayTeam"]]
 
     # Fit the encoder using training data only
     encoder = OneHotEncoder(handle_unknown="ignore", sparse_output=False)
 
     X_train_encoded = encoder.fit_transform(X_train_teams)
-    X_test_encoded = encoder.transform(X_test_teams)
+    X_validation_encoded = encoder.transform(X_validation_teams)
 
     # Combine numerical and encoded team features
     encoded_columns = encoder.get_feature_names_out(["HomeTeam", "AwayTeam"])
@@ -46,26 +107,26 @@ def prepare_data():
         pd.DataFrame(X_train_encoded, columns=encoded_columns)
     ], axis=1)
 
-    X_test = pd.concat([
-        X_test_numeric.reset_index(drop=True),
-        pd.DataFrame(X_test_encoded, columns=encoded_columns)
+    X_validation = pd.concat([
+        X_validation_numeric.reset_index(drop=True),
+        pd.DataFrame(X_validation_encoded, columns=encoded_columns)
     ], axis=1)
 
     # Create target labels
     y_train = train_data["FTR"].map({"H": 0, "D": 1, "A": 2})
-    y_test = test_data["FTR"].map({"H": 0, "D": 1, "A": 2})
+    y_validation = validation_data["FTR"].map({"H": 0, "D": 1, "A": 2})
 
     # Handle missing historical averages
     X_train = X_train.fillna(0)
-    X_test = X_test.fillna(0)
+    X_validation = X_validation.fillna(0)
 
     # Save prepared datasets
     X_train.assign(Target=y_train.reset_index(drop=True)).to_csv(
-        DATA_DIR / "train_model.csv", index=False
+        DATA_DIR / "train_split_model.csv", index=False
     )
 
-    X_test.assign(Target=y_test.reset_index(drop=True)).to_csv(
-        DATA_DIR / "test_model.csv", index=False
+    X_validation.assign(Target=y_validation.reset_index(drop=True)).to_csv(
+        DATA_DIR / "validation_model.csv", index=False
     )
 
 

@@ -7,6 +7,8 @@ OUTPUT_PATH = Path("data/processed/matches_with_features.csv")
 
 STATS = ["GoalsScored", "GoalsConceded", "Shots", "ShotsOnTarget", "Points"]
 
+VENUE_STATS = ["Points", "GoalsScored", "GoalsConceded"]
+
 
 def load_matches():
     """Load and prepare historical match data."""
@@ -19,9 +21,10 @@ def load_matches():
 
 
 def calculate_team_features(data):
-    """Calculate each team's rolling averages from previous matches."""
+    """Calculate rolling and season-to-date averages from previous matches."""
 
     home = pd.DataFrame({
+        "Venue": "Home",
         "MatchID": data["MatchID"],
         "Date": data["Date"],
         "Team": data["HomeTeam"],
@@ -33,6 +36,7 @@ def calculate_team_features(data):
     })
 
     away = pd.DataFrame({
+        "Venue": "Away",
         "MatchID": data["MatchID"],
         "Date": data["Date"],
         "Team": data["AwayTeam"],
@@ -46,13 +50,64 @@ def calculate_team_features(data):
     team_matches = pd.concat([home, away], ignore_index=True)
     team_matches = team_matches.sort_values(["Team", "Date", "MatchID"])
 
-    for stat in STATS:
-        team_matches[f"Avg{stat}"] = (
-            team_matches.groupby("Team")[stat]
-            .transform(lambda x: x.shift(1).rolling(window=5, min_periods=1).mean())
+    # Calculate venue-specific averages from previous matches.
+    for stat in VENUE_STATS:
+        team_matches[f"VenueAvg{stat}"] = (
+            team_matches.groupby(["Team", "Venue"])[stat]
+            .transform(
+                lambda x: x.shift(1).expanding(min_periods=1).mean()
+            )
         )
 
-    return team_matches[["MatchID", "Team"] + [f"Avg{s}" for s in STATS]]
+    # Identify the starting year of each Premier League season.
+    team_matches["Season"] = (
+        team_matches["Date"].dt.year
+        - (team_matches["Date"].dt.month < 7).astype(int)
+    )
+
+    for stat in STATS:
+        # Calculate averages from the previous five matches.
+        team_matches[f"Avg{stat}"] = (
+            team_matches.groupby("Team")[stat]
+            .transform(
+                lambda x: x.shift(1).rolling(window=5, min_periods=1).mean()
+            )
+        )
+
+        # Calculate averages from the previous ten matches.
+        team_matches[f"Avg10{stat}"] = (
+            team_matches.groupby("Team")[stat]
+            .transform(
+                lambda x: x.shift(1).rolling(window=10, min_periods=1).mean()
+            )
+        )
+
+        # Calculate averages from all previous matches in the current season.
+        team_matches[f"SeasonAvg{stat}"] = (
+            team_matches.groupby(["Team", "Season"])[stat]
+            .transform(
+                lambda x: x.shift(1).expanding(min_periods=1).mean()
+            )
+        )
+
+    # Count the team's previous matches in the current season.
+    team_matches["SeasonMatchesPlayed"] = (
+        team_matches.groupby(["Team", "Season"]).cumcount()
+    )
+
+    feature_columns = (
+        [f"Avg{s}" for s in STATS]
+        + [f"Avg10{s}" for s in STATS]
+        + [
+            "SeasonAvgPoints",
+            "SeasonAvgGoalsScored",
+            "SeasonAvgGoalsConceded",
+            "SeasonMatchesPlayed"
+        ]
+        + [f"VenueAvg{s}" for s in VENUE_STATS]
+    )
+
+    return team_matches[["MatchID", "Team"] + feature_columns]
 
 
 def build_features():
@@ -62,13 +117,31 @@ def build_features():
     team_features = calculate_team_features(data)
 
     home_features = team_features.rename(columns={
+        "VenueAvgPoints": "HomeHomeAvgPoints",
+        "VenueAvgGoalsScored": "HomeHomeAvgGoalsScored",
+        "VenueAvgGoalsConceded": "HomeHomeAvgGoalsConceded",
         "Team": "HomeTeam",
-        **{f"Avg{s}": f"HomeAvg{s}" for s in STATS}
+        "SeasonMatchesPlayed": "HomeSeasonMatchesPlayed",
+        **{f"Avg{s}": f"HomeAvg{s}" for s in STATS},
+        **{f"Avg10{s}": f"HomeAvg10{s}" for s in STATS},
+        **{
+            f"SeasonAvg{s}": f"HomeSeasonAvg{s}"
+            for s in ["Points", "GoalsScored", "GoalsConceded"]
+        }
     })
 
     away_features = team_features.rename(columns={
+        "VenueAvgPoints": "AwayAwayAvgPoints",
+        "VenueAvgGoalsScored": "AwayAwayAvgGoalsScored",
+        "VenueAvgGoalsConceded": "AwayAwayAvgGoalsConceded",
         "Team": "AwayTeam",
-        **{f"Avg{s}": f"AwayAvg{s}" for s in STATS}
+        "SeasonMatchesPlayed": "AwaySeasonMatchesPlayed",
+        **{f"Avg{s}": f"AwayAvg{s}" for s in STATS},
+        **{f"Avg10{s}": f"AwayAvg10{s}" for s in STATS},
+        **{
+            f"SeasonAvg{s}": f"AwaySeasonAvg{s}"
+            for s in ["Points", "GoalsScored", "GoalsConceded"]
+        }
     })
 
     data = data.merge(

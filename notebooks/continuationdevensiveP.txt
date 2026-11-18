@@ -1,0 +1,110 @@
+Continued to try and implement comparison of teams defensive performances to predict more Draws
+Using one new feature of a binary implementation BothDefencesStrong either 0 or 1 yeilded no use
+
+changing this to CombinedDefensiveStrength managed to identify one draw!
+But lost overall accuracy.
+
+Draw Calibration:
+                Matches  AveragePredicted  ActualDrawRate
+ProbabilityBin                                           
+0-10%                15          7.440000            6.67
+10-20%               86         15.830000           18.60
+20-30%              224         24.719999           26.34
+30-40%               40         33.759998           17.50
+40-100%               0               NaN             NaN
+
+Analysis of Actual Draws:
+Total actual draws: 83
+Average predicted draw probability: 23.09%
+
+Draw Probability Ranking:
+Highest: 1 matches (1.20%)
+Second highest: 23 matches (27.71%)
+Lowest: 59 matches (71.08%)
+
+Feature Importance:
+                  Feature  Importance
+        ShotsOnTargetDiff    0.073082
+        AwayTeam_Man City    0.039368
+      HomeTeam_Man United    0.029678
+      AwayTeam_Man United    0.029158
+         HomeTeam_Everton    0.029017
+               PointsDiff    0.027930
+AwayTeam_Sheffield United    0.025170
+     AwayTeam_Aston Villa    0.024830
+         AwayTeam_Arsenal    0.024677
+            HomeAvgPoints    0.024211
+     HomeTeam_Aston Villa    0.023567
+        HomeTeam_Man City    0.023012
+             AwayAvgShots    0.022407
+             HomeAvgShots    0.022407
+     HomeTeam_Southampton    0.021211
+          HomeTeam_Fulham    0.020660
+         HomeTeam_Watford    0.020188
+         HomeTeam_Burnley    0.020121
+         HomeTeam_Arsenal    0.019815
+          AwayTeam_Fulham    0.019743
+HomeTeam_Sheffield United    0.019611
+       HomeTeam_Tottenham    0.019509
+       HomeTeam_Liverpool    0.019209
+       HomeAvgGoalsScored    0.019000
+     AwayTeam_Southampton    0.018991
+  AwayTeam_Crystal Palace    0.018909
+        AwayTeam_Brighton    0.018203
+        HomeTeam_Brighton    0.018193
+        HomeTeam_West Ham    0.017775
+     HomeAvgShotsOnTarget    0.017268
+       AwayAvgGoalsScored    0.016989
+         HomeTeam_Norwich    0.016412
+     AwayAvgShotsOnTarget    0.016227
+           HomeTeam_Leeds    0.016067
+            AwayAvgPoints    0.015745
+        AwayTeam_West Ham    0.015573
+     AwayAvgGoalsConceded    0.015186
+         HomeTeam_Chelsea    0.014165
+     HomeAvgGoalsConceded    0.013886
+   AwayTeam_Nott'm Forest    0.013803
+           AwayTeam_Leeds    0.013425
+CombinedDefensiveStrength    0.012976
+         AwayTeam_Norwich    0.012905
+  HomeTeam_Crystal Palace    0.012872
+       AwayTeam_Liverpool    0.012692
+       HomeTeam_Newcastle    0.012648
+       HomeTeam_Brentford    0.012123
+   HomeTeam_Nott'm Forest    0.010441
+       HomeTeam_Leicester    0.009326
+         AwayTeam_Burnley    0.005740
+       AwayTeam_Brentford    0.003878
+           HomeTeam_Luton    0.000000
+     HomeTeam_Bournemouth    0.000000
+       HomeTeam_West Brom    0.000000
+         AwayTeam_Chelsea    0.000000
+     AwayTeam_Bournemouth    0.000000
+          HomeTeam_Wolves    0.000000
+         AwayTeam_Everton    0.000000
+       AwayTeam_Newcastle    0.000000
+       AwayTeam_Leicester    0.000000
+           AwayTeam_Luton    0.000000
+       AwayTeam_Tottenham    0.000000
+         AwayTeam_Watford    0.000000
+       AwayTeam_West Brom    0.000000
+          AwayTeam_Wolves    0.000000
+Accuracy: 0.5068
+Log Loss: 1.0241
+
+Classification Report:
+              precision    recall  f1-score   support
+
+    Home Win       0.52      0.76      0.62       151
+        Draw       0.14      0.01      0.02        83
+    Away Win       0.50      0.53      0.51       131
+
+    accuracy                           0.51       365
+   macro avg       0.39      0.43      0.39       365
+weighted avg       0.43      0.51      0.45       365
+
+
+Confusion Matrix:
+[[115   1  35]
+ [ 48   1  34]
+ [ 57   5  69]]

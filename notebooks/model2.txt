@@ -1,0 +1,30 @@
+added more data inputs
+first run:
+PS C:\Users\hzbyr\OneDrive\Desktop\projects\premier-league-match-predictor> python src/train_model.py
+Accuracy: 0.4496
+Log Loss: 1.0698
+
+Classification Report:
+              precision    recall  f1-score   support
+
+    Home Win       0.48      0.74      0.58       194
+        Draw       0.14      0.01      0.02       122
+    Away Win       0.40      0.44      0.41       140
+
+    accuracy                           0.45       456
+   macro avg       0.34      0.39      0.34       456
+weighted avg       0.37      0.45      0.38       456
+
+
+Confusion Matrix:
+[[143   3  48]
+ [ 76   1  45]
+ [ 76   3  61]]
+
+Draw Probability Distribution:
+0%-10%: 6 matches, 2 draws (33.3%)
+10%-20%: 112 matches, 32 draws (28.6%)
+20%-30%: 289 matches, 78 draws (27.0%)
+30%-40%: 47 matches, 10 draws (21.3%)
+40%-100%: 2 matches, 0 draws (0.0%)
+Slight regression overall, but we did predict a draw correctly! overall draw distribution is not very accurate?

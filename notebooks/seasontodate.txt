@@ -1,0 +1,114 @@
+New model tracks season to date, has new stats, has new stats.
+Draw Calibration:
+                Matches  AveragePredicted  ActualDrawRate
+ProbabilityBin                                           
+0-10%                15          7.620000            0.00
+10-20%               86         15.680000           19.77
+20-30%              219         24.590000           26.48
+30-40%               41         32.660000           17.07
+40-100%               4         42.040001           25.00
+
+Analysis of Actual Draws:
+Total actual draws: 83
+Average predicted draw probability: 23.23%
+
+Draw Probability Ranking:
+Highest: 1 matches (1.20%)
+Second highest: 34 matches (40.96%)
+Lowest: 48 matches (57.83%)
+
+Feature Importance:
+                   Feature  Importance
+         ShotsOnTargetDiff    0.085850
+         AwayTeam_Man City    0.039100
+  AwaySeasonAvgGoalsScored    0.030659
+AwaySeasonAvgGoalsConceded    0.030583
+             HomeAvgPoints    0.030111
+       HomeSeasonAvgPoints    0.028732
+          HomeTeam_Everton    0.024516
+  HomeSeasonAvgGoalsScored    0.024231
+       AwaySeasonAvgPoints    0.024055
+       HomeTeam_Man United    0.024024
+ AwayTeam_Sheffield United    0.022364
+      HomeTeam_Southampton    0.022265
+          AwayTeam_Arsenal    0.021716
+              HomeAvgShots    0.020657
+         AwayTeam_West Ham    0.020194
+              AwayAvgShots    0.019920
+       AwayTeam_Man United    0.019473
+      HomeTeam_Aston Villa    0.019404
+          HomeTeam_Burnley    0.019335
+          HomeTeam_Watford    0.018445
+HomeSeasonAvgGoalsConceded    0.018321
+                PointsDiff    0.018002
+        HomeTeam_Tottenham    0.017752
+            HomeTeam_Leeds    0.017719
+         HomeTeam_Brighton    0.017570
+      AwayAvgShotsOnTarget    0.017395
+             AwayAvgPoints    0.017359
+      HomeAvgShotsOnTarget    0.017310
+         HomeTeam_Man City    0.017175
+           HomeTeam_Wolves    0.016773
+        HomeAvgGoalsScored    0.016509
+         AwayTeam_Brighton    0.016229
+ HomeTeam_Sheffield United    0.015234
+        AwayAvgGoalsScored    0.015083
+          HomeTeam_Chelsea    0.014641
+          HomeTeam_Arsenal    0.014506
+           AwayTeam_Fulham    0.014292
+        AwayTeam_Newcastle    0.014165
+      AwayAvgGoalsConceded    0.013930
+    HomeTeam_Nott'm Forest    0.013885
+        HomeTeam_Liverpool    0.012916
+      AwayTeam_Aston Villa    0.012330
+        AwayTeam_Brentford    0.011441
+    AwayTeam_Nott'm Forest    0.011059
+          HomeTeam_Norwich    0.010977
+   HomeTeam_Crystal Palace    0.010284
+        HomeTeam_Newcastle    0.009822
+      HomeAvgGoalsConceded    0.009320
+      AwayTeam_Southampton    0.008919
+            AwayTeam_Leeds    0.008288
+        HomeTeam_Leicester    0.007831
+          AwayTeam_Burnley    0.006953
+        AwayTeam_Liverpool    0.006313
+           AwayTeam_Wolves    0.004060
+            HomeTeam_Luton    0.000000
+           HomeTeam_Fulham    0.000000
+      HomeTeam_Bournemouth    0.000000
+        HomeTeam_Brentford    0.000000
+        HomeTeam_West Brom    0.000000
+         HomeTeam_West Ham    0.000000
+          AwayTeam_Chelsea    0.000000
+      AwayTeam_Bournemouth    0.000000
+          AwayTeam_Everton    0.000000
+   AwayTeam_Crystal Palace    0.000000
+        AwayTeam_Leicester    0.000000
+            AwayTeam_Luton    0.000000
+          AwayTeam_Norwich    0.000000
+        AwayTeam_Tottenham    0.000000
+        AwayTeam_West Brom    0.000000
+          AwayTeam_Watford    0.000000
+Accuracy: 0.4932
+Log Loss: 1.0213
+
+Classification Report:
+              precision    recall  f1-score   support
+
+    Home Win       0.50      0.76      0.61       151
+        Draw       0.17      0.01      0.02        83
+    Away Win       0.49      0.49      0.49       131
+
+    accuracy                           0.49       365
+   macro avg       0.39      0.42      0.37       365
+weighted avg       0.42      0.49      0.43       365
+
+
+Confusion Matrix:
+[[115   1  35]
+ [ 51   1  31]
+ [ 63   4  64]] 
+
+ I think this is finally working towards something better
+ logloss is slightly better, accuracy slightly worse. However the new stats are being used heavily!
+ Also slightly better at draws!
