@@ -1,0 +1,551 @@
+# Premier League Match Predictor — Master Model Development Record
+
+## Current Best Model
+
+**Model:** XGBoost Classifier
+**Validation accuracy:** 52.60%
+**Validation log loss:** 1.0097
+**Validation matches:** 365
+
+### Current Feature Set
+
+- Home and away team identity (one-hot encoded)
+- Five-match rolling averages
+- Ten-match rolling averages
+- Season-to-date averages
+- Season matches played
+- Points difference
+- Shots on target difference
+- Home team's historical home average points
+- Away team's historical away average points
+- Home team's historical home goals scored and conceded
+- Away team's historical away goals scored and conceded
+
+### Current Best Model Performance
+
+| Metric | Result |
+|---|---:|
+| Accuracy | 52.60% |
+| Log loss | 1.0097 |
+| Home win precision | 0.52 |
+| Home win recall | 0.83 |
+| Draw precision | 0.29 |
+| Draw recall | 0.02 |
+| Away win precision | 0.56 |
+| Away win recall | 0.50 |
+
+**Confusion matrix (actual rows, predicted columns; H/D/A):**
+
+| | Predicted H | Predicted D | Predicted A |
+|---|---:|---:|---:|
+| Actual H | 125 | 4 | 22 |
+| Actual D | 51 | 2 | 30 |
+| Actual A | 65 | 1 | 65 |
+
+Of 83 actual draws:
+- Highest draw probability: 2 (2.41%)
+- Second-highest: 39 (46.99%)
+- Lowest: 42 (50.60%)
+- Average predicted draw probability: 23.49%
+
+---
+
+## Feature Experiments
+
+### Experiment A — Initial Feature Set
+
+**Why suggested:** Establish a baseline using recent team statistics and team identity.
+
+**Features:** Original numerical feature set, including goal-difference features, plus home and away team identity.
+
+**Results:**
+- Accuracy: 50.41%
+- Log loss: 1.0300
+- Draw precision/recall/F1: 0.00 / 0.00 / 0.00
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 143 | 4 | 47 |
+| D | 77 | 0 | 45 |
+| A | 73 | 2 | 65 |
+
+**Decision:** Used as the initial baseline for feature selection.
+
+### Experiment B — Remove Goal-Difference Features
+
+**Why suggested:** Test whether the calculated goal-difference features added useful information beyond the underlying goals-scored and goals-conceded statistics.
+
+**Removed:**
+- HomeGoalDiff
+- AwayGoalDiff
+- GoalsScoredDiff
+
+**Results:**
+- Accuracy: 50.96%
+- Log loss: 1.0218
+- Draw precision/recall/F1: 0.00 / 0.00 / 0.00
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 114 | 1 | 36 |
+| D | 50 | 0 | 33 |
+| A | 55 | 4 | 72 |
+
+**Decision:** Kept without the goal-difference features. Accuracy and log loss both improved over Experiment A.
+
+### Experiment C — Draw Class Weighting
+
+**Why suggested:** The baseline model rarely predicted draws, despite draws representing a substantial part of the dataset.
+
+Tested different draw class weights while keeping the other class weights at 1.00.
+
+| Draw weight | Accuracy | Log loss | Draw precision | Draw recall | Draw F1 |
+|---:|---:|---:|---:|---:|---:|
+| 1.00 | 50.41% | 1.0300 | 0.00 | 0.00 | 0.00 |
+| 1.25 | 49.32% | 1.0323 | 0.25 | 0.06 | 0.10 |
+| 1.50 | 47.40% | 1.0405 | 0.20 | 0.12 | 0.15 |
+| 1.75 | 42.74% | 1.0542 | 0.22 | 0.31 | 0.26 |
+| 2.00 | 40.00% | 1.0677 | 0.23 | 0.47 | 0.31 |
+
+**Decision:** Retained equal class weights (1.00). Higher draw weights increased draw recall but substantially worsened overall performance.
+
+### Experiment D — Combined Defensive Strength
+
+**Why suggested:** Test whether combining the two teams' goals conceded would represent the defensive strength of a matchup.
+
+Feature:
+- CombinedDefensiveStrength = HomeAvgGoalsConceded + AwayAvgGoalsConceded
+
+**Results:**
+- Accuracy: 50.68%
+- Log loss: 1.0241
+- Draw precision: 0.14
+- Draw recall: 0.01
+- Draw F1: 0.02
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 115 | 1 | 35 |
+| D | 48 | 1 | 34 |
+| A | 57 | 5 | 69 |
+
+**Decision:** Removed. Slightly worse accuracy and log loss than Experiment B.
+
+### Experiment E — Season-to-Date Averages
+
+**Why suggested:** Five-match averages might not adequately represent a team's overall performance during the current season.
+
+Added:
+- HomeSeasonAvgPoints
+- HomeSeasonAvgGoalsScored
+- HomeSeasonAvgGoalsConceded
+- AwaySeasonAvgPoints
+- AwaySeasonAvgGoalsScored
+- AwaySeasonAvgGoalsConceded
+
+These averages reset at the beginning of each season and use only previous matches.
+
+**Results:**
+- Accuracy: 49.32%
+- Log loss: 1.0213
+- Draw precision: 0.17
+- Draw recall: 0.01
+- Draw F1: 0.02
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 115 | 1 | 35 |
+| D | 51 | 1 | 31 |
+| A | 63 | 4 | 64 |
+
+Draw calibration:
+
+| Predicted probability | Matches | Average predicted | Actual draw rate |
+|---|---:|---:|---:|
+| 0–10% | 15 | 7.62% | 0.00% |
+| 10–20% | 86 | 15.68% | 19.77% |
+| 20–30% | 219 | 24.59% | 26.48% |
+| 30–40% | 41 | 32.66% | 17.07% |
+| 40–100% | 4 | 42.04% | 25.00% |
+
+Actual draws:
+- Average predicted draw probability: 23.23%
+- Highest draw probability: 1 (1.20%)
+- Second-highest: 34 (40.96%)
+- Lowest: 48 (57.83%)
+
+**Decision:** Kept. Log loss improved slightly over Experiment B, and the model began assigning the draw class as its highest probability in some matches.
+
+### Experiment F — Season Matches Played
+
+**Why suggested:** Season averages are based on different amounts of historical information depending on how far into a season the match occurs.
+
+Added:
+- HomeSeasonMatchesPlayed
+- AwaySeasonMatchesPlayed
+
+These count the team's previous matches in the current season.
+
+**Results:**
+- Accuracy: 49.59%
+- Log loss: 1.0217
+- Draw precision: 0.25
+- Draw recall: 0.01
+- Draw F1: 0.02
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 116 | 1 | 34 |
+| D | 50 | 1 | 32 |
+| A | 65 | 2 | 64 |
+
+Draw calibration:
+
+| Predicted probability | Matches | Average predicted | Actual draw rate |
+|---|---:|---:|---:|
+| 0–10% | 17 | 7.94% | 0.00% |
+| 10–20% | 90 | 16.15% | 24.44% |
+| 20–30% | 215 | 24.62% | 24.65% |
+| 30–40% | 41 | 32.78% | 17.07% |
+| 40–100% | 2 | 42.03% | 50.00% |
+
+Actual draws:
+- Average predicted draw probability: 23.02%
+- Highest: 1 (1.20%)
+- Second-highest: 31 (37.35%)
+- Lowest: 51 (61.45%)
+
+Feature importance:
+- AwaySeasonMatchesPlayed: 0.016470
+- HomeSeasonMatchesPlayed: 0.014390
+
+**Decision:** Kept. Small improvement in accuracy over E, but log loss worsened slightly. Both features were used by the model.
+
+### Experiment G — Ten-Match Rolling Averages
+
+**Why suggested:** Five-match averages may react too strongly to short-term fluctuations. Ten-match averages could capture more stable recent performance.
+
+Added ten-match averages for:
+- Goals scored
+- Goals conceded
+- Shots
+- Shots on target
+- Points
+
+For both home and away teams.
+
+**Results:**
+- Accuracy: 49.59%
+- Log loss: 1.0215
+- Draw precision: 0.10
+- Draw recall: 0.01
+- Draw F1: 0.02
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 116 | 3 | 32 |
+| D | 49 | 1 | 33 |
+| A | 61 | 6 | 64 |
+
+Draw calibration:
+
+| Predicted probability | Matches | Average predicted | Actual draw rate |
+|---|---:|---:|---:|
+| 0–10% | 13 | 7.58% | 0.00% |
+| 10–20% | 116 | 15.74% | 23.28% |
+| 20–30% | 187 | 24.22% | 24.60% |
+| 30–40% | 43 | 32.97% | 23.26% |
+| 40–100% | 6 | 42.50% | 0.00% |
+
+Actual draws:
+- Average predicted draw probability: 22.40%
+- Highest: 1 (1.20%)
+- Second-highest: 34 (40.96%)
+- Lowest: 48 (57.83%)
+
+Feature importance among new features:
+
+| Feature | Importance |
+|---|---:|
+| HomeAvg10ShotsOnTarget | 0.028988 |
+| HomeAvg10Shots | 0.024833 |
+| AwayAvg10Shots | 0.022340 |
+| HomeAvg10GoalsScored | 0.020852 |
+| AwayAvg10Points | 0.020742 |
+| HomeAvg10Points | 0.015299 |
+| AwayAvg10GoalsScored | 0.014699 |
+| AwayAvg10GoalsConceded | 0.014435 |
+| AwayAvg10ShotsOnTarget | 0.012266 |
+| HomeAvg10GoalsConceded | 0.008903 |
+
+**Decision:** Kept. Accuracy was unchanged from F, while log loss improved slightly.
+
+### Experiment H — Winning, Losing and Drawing Streaks
+
+**Why suggested:** Consecutive results might capture momentum that rolling averages do not fully represent.
+
+Added:
+- HomeWinStreak
+- AwayWinStreak
+- HomeLossStreak
+- AwayLossStreak
+- HomeDrawStreak
+- AwayDrawStreak
+
+Streaks were calculated using previous matches only.
+
+**Results:**
+- Accuracy: 49.86%
+- Log loss: 1.0230
+- Draw precision: 0.09
+- Draw recall: 0.01
+- Draw F1: 0.02
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 117 | 2 | 32 |
+| D | 48 | 1 | 34 |
+| A | 59 | 8 | 64 |
+
+Feature importance:
+
+| Feature | Importance |
+|---|---:|
+| HomeWinStreak | 0.013375 |
+| HomeLossStreak | 0.012492 |
+| AwayDrawStreak | 0.012300 |
+| AwayWinStreak | 0.008867 |
+| AwayLossStreak | 0.007813 |
+| HomeDrawStreak | 0.004820 |
+
+**Decision:** Removed. Accuracy improved slightly, but log loss worsened and draw detection did not meaningfully improve.
+
+### Experiment I — Venue-Specific Points Averages
+
+**Why suggested:** Teams may perform differently at home and away, beyond the general home advantage represented by team identity.
+
+Added:
+- HomeHomeAvgPoints
+- AwayAwayAvgPoints
+
+These represent each team's historical average points at the venue where it is about to play.
+
+**Results:**
+- Accuracy: 49.86%
+- Log loss: 1.0184
+- Draw precision: 0.07
+- Draw recall: 0.01
+- Draw F1: 0.02
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 118 | 7 | 26 |
+| D | 49 | 1 | 33 |
+| A | 62 | 6 | 63 |
+
+Draw calibration:
+
+| Predicted probability | Matches | Average predicted | Actual draw rate |
+|---|---:|---:|---:|
+| 0–10% | 14 | 7.46% | 0.00% |
+| 10–20% | 119 | 16.18% | 21.01% |
+| 20–30% | 187 | 24.50% | 26.74% |
+| 30–40% | 40 | 34.03% | 17.50% |
+| 40–100% | 5 | 42.63% | 20.00% |
+
+Actual draws:
+- Average predicted draw probability: 22.50%
+- Highest: 1 (1.20%)
+- Second-highest: 26 (31.33%)
+- Lowest: 56 (67.47%)
+
+Feature importance:
+- HomeHomeAvgPoints: 0.019328
+- AwayAwayAvgPoints: 0.017419
+
+**Decision:** Kept. Improved log loss over H.
+
+### Experiment J — All Four Venue-Specific Points Averages
+
+**Why suggested:** Test whether a team's performance at the opposite venue also provides useful information.
+
+Added:
+- HomeHomeAvgPoints
+- HomeAwayAvgPoints
+- AwayHomeAvgPoints
+- AwayAwayAvgPoints
+
+**Results:**
+- Accuracy: 49.86%
+- Log loss: 1.0184
+- Confusion matrix and predictions identical to Experiment I.
+
+Feature importance:
+- HomeHomeAvgPoints: 0.019328
+- AwayAwayAvgPoints: 0.017419
+- AwayHomeAvgPoints: 0.000000
+- HomeAwayAvgPoints: 0.000000
+
+**Decision:** Removed the two opposite-venue features. They had zero importance and did not change predictions.
+
+### Experiment K — Venue-Specific Goals Scored and Conceded
+
+**Why suggested:** Points alone may not explain how teams perform at home and away. Goals scored and conceded could capture venue-specific attacking and defensive tendencies.
+
+Added:
+- HomeHomeAvgGoalsScored
+- HomeHomeAvgGoalsConceded
+- AwayAwayAvgGoalsScored
+- AwayAwayAvgGoalsConceded
+
+**Results:**
+- Accuracy: 52.60%
+- Log loss: 1.0097
+- Draw precision: 0.29
+- Draw recall: 0.02
+- Draw F1: 0.04
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 125 | 4 | 22 |
+| D | 51 | 2 | 30 |
+| A | 65 | 1 | 65 |
+
+Draw calibration:
+
+| Predicted probability | Matches | Average predicted | Actual draw rate |
+|---|---:|---:|---:|
+| 0–10% | 14 | 7.88% | 0.00% |
+| 10–20% | 103 | 16.36% | 21.36% |
+| 20–30% | 201 | 24.71% | 25.87% |
+| 30–40% | 44 | 33.73% | 18.18% |
+| 40–100% | 3 | 42.99% | 33.33% |
+
+Actual draws:
+- Average predicted draw probability: 23.49%
+- Highest: 2 (2.41%)
+- Second-highest: 39 (46.99%)
+- Lowest: 42 (50.60%)
+
+Feature importance:
+
+| Feature | Importance |
+|---|---:|
+| AwayAwayAvgGoalsConceded | 0.022685 |
+| HomeHomeAvgGoalsScored | 0.019387 |
+| AwayAwayAvgGoalsScored | 0.016735 |
+| HomeHomeAvgGoalsConceded | 0.012858 |
+
+All four new features were used by the model.
+
+**Decision:** Kept. Best model so far. Accuracy improved by 2.74 percentage points and log loss decreased by 0.0087 compared with Experiment I.
+
+### Experiment L — Venue-Specific Shots on Target
+
+**Why suggested:** Test whether teams' shooting accuracy differs by venue and adds information beyond their general shots-on-target averages.
+
+Added:
+- HomeHomeAvgShotsOnTarget
+- AwayAwayAvgShotsOnTarget
+
+**Results:**
+- Accuracy: 51.78%
+- Log loss: 1.0113
+- Draw precision: 0.29
+- Draw recall: 0.02
+- Draw F1: 0.04
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 127 | 2 | 22 |
+| D | 54 | 2 | 27 |
+| A | 68 | 3 | 60 |
+
+Draw calibration:
+
+| Predicted probability | Matches | Average predicted | Actual draw rate |
+|---|---:|---:|---:|
+| 0–10% | 11 | 7.88% | 0.00% |
+| 10–20% | 101 | 15.98% | 21.78% |
+| 20–30% | 204 | 24.63% | 25.00% |
+| 30–40% | 46 | 33.43% | 19.57% |
+| 40–100% | 3 | 45.74% | 33.33% |
+
+Actual draws:
+- Average predicted draw probability: 23.46%
+- Highest: 2
+- Second-highest: 34
+- Lowest: 47
+
+Feature importance:
+- HomeHomeAvgShotsOnTarget: 0.021082
+- AwayAwayAvgShotsOnTarget: 0.017346
+
+**Decision:** Removed. Both features were used, but overall accuracy and log loss worsened compared with K.
+
+### Experiment M — Venue-Specific Win Rates
+
+**Why suggested:** Average points combines wins, draws and losses. Win rate could provide a more direct measure of how frequently a team wins at its home or away venue.
+
+Added:
+- HomeHomeWinRate
+- AwayAwayWinRate
+
+**Results:**
+- Accuracy: 52.60%
+- Log loss: 1.0184
+- Draw precision: 0.12
+- Draw recall: 0.01
+- Draw F1: 0.02
+
+Confusion matrix:
+
+| | H | D | A |
+|---|---:|---:|---:|
+| H | 126 | 5 | 20 |
+| D | 51 | 1 | 31 |
+| A | 64 | 2 | 65 |
+
+Draw calibration:
+
+| Predicted probability | Matches | Average predicted | Actual draw rate |
+|---|---:|---:|---:|
+| 0–10% | 13 | 8.06% | 0.00% |
+| 10–20% | 102 | 16.09% | 21.57% |
+| 20–30% | 198 | 24.78% | 25.76% |
+| 30–40% | 47 | 33.82% | 21.28% |
+| 40–100% | 5 | 42.02% | 0.00% |
+
+Actual draws:
+- Average predicted draw probability: 23.27%
+- Highest: 1 (1.20%)
+- Second-highest: 37 (44.58%)
+- Lowest: 45 (54.22%)
+
+Feature importance:
+- HomeHomeWinRate: 0.022971
+- AwayAwayWinRate: 0.015076
+
+**Decision:** Removed. Accuracy was unchanged, but log loss worsened from 1.0097 to 1.0184. Draw performance also declined.
+
+---
