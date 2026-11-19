@@ -3,22 +3,25 @@ import pandas as pd
 from xgboost import XGBClassifier
 from sklearn.metrics import accuracy_score, classification_report, log_loss, confusion_matrix
 from sklearn.inspection import permutation_importance
+from sklearn.metrics import precision_score, recall_score, f1_score
+from sklearn.utils import Bunch
+from typing import cast
 
 DATA_DIR = Path("data/processed")
 
 def load_data():
-    """Load prepared training and testing datasets."""
+    """Load prepared training and validation datasets."""
 
     train_data = pd.read_csv(DATA_DIR / "train_split_model.csv")
-    test_data = pd.read_csv(DATA_DIR / "validation_model.csv")
+    validation_data = pd.read_csv(DATA_DIR / "validation_model.csv")
 
     X_train = train_data.drop(columns=["Target"])
     y_train = train_data["Target"]
 
-    X_test = test_data.drop(columns=["Target"])
-    y_test = test_data["Target"]
+    X_validation = validation_data.drop(columns=["Target"])
+    y_validation = validation_data["Target"]
 
-    return X_train, X_test, y_train, y_test
+    return X_train, X_validation, y_train, y_validation
 
 def train_model(X_train, y_train):
     """Train an XGBoost classifier."""
@@ -28,7 +31,7 @@ def train_model(X_train, y_train):
         num_class=3,
         n_estimators=100,
         learning_rate=0.05,
-        max_depth=3,
+        max_depth=2,
         random_state=42,
         eval_metric="mlogloss"
     )
@@ -86,7 +89,7 @@ def evaluate_model(model, X_test, y_test):
     print(matrix)
 
 
-    
+
 
 def show_feature_importance(model, X_train):
     importance = pd.DataFrame({
@@ -103,7 +106,7 @@ def show_feature_importance(model, X_train):
     print(importance.to_string(index=False))
 
 def show_permutation_importance(model, X_test, y_test):
-    results = permutation_importance(
+    results = cast(Bunch, permutation_importance(
         model,
         X_test,
         y_test,
@@ -111,7 +114,7 @@ def show_permutation_importance(model, X_test, y_test):
         n_repeats=10,
         random_state=42,
         n_jobs=-1
-    )
+    ))
 
     importance = pd.DataFrame({
         "Feature": X_test.columns,
@@ -216,17 +219,15 @@ def test_draw_thresholds(model, X_test, y_test):
 
         accuracy = accuracy_score(y_test, predictions)
 
-        report = classification_report(
-            y_test,
-            predictions,
-            labels=[0, 1, 2],
-            output_dict=True,
-            zero_division=0
+        draw_precision = precision_score(
+            y_test, predictions, pos_label=1, zero_division=0
         )
-
-        draw_precision = report["1"]["precision"]
-        draw_recall = report["1"]["recall"]
-        draw_f1 = report["1"]["f1-score"]
+        draw_recall = recall_score(
+            y_test, predictions, pos_label=1, zero_division=0
+        )
+        draw_f1 = f1_score(
+            y_test, predictions, pos_label=1, zero_division=0
+        )
 
         print(
             f"{threshold:<12.1%}"
@@ -417,33 +418,29 @@ def analyze_historical_draw_rate():
 
 
 def main():
-    """Run the model training and evaluation pipeline."""
+    """Run the model training and validation pipeline."""
 
-    X_train, X_test, y_train, y_test = load_data()
+    X_train, X_validation, y_train, y_validation = load_data()
 
     model = train_model(X_train, y_train)
 
-    check_draw_calibration(model, X_test, y_test)
+    check_draw_calibration(model, X_validation, y_validation)
 
-    analyze_actual_draws(model, X_test, y_test)
+    analyze_actual_draws(model, X_validation, y_validation)
 
     #analyze_defensive_performance()
 
     #analyze_historical_draw_rate()
 
     #analyze_team_strength_difference()
-    
-    #test_draw_thresholds(model, X_test, y_test)
 
-    show_feature_importance(model, X_train)    
+    #test_draw_thresholds(model, X_validation, y_validation)
 
-    #show_permutation_importance(model, X_test, y_test) 
+    show_feature_importance(model, X_train)
 
-    evaluate_model(model, X_test, y_test)
+    #show_permutation_importance(model, X_validation, y_validation)
 
-    
-
-
+    evaluate_model(model, X_validation, y_validation)
 
 
 if __name__ == "__main__":

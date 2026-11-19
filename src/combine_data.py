@@ -22,25 +22,35 @@ columns = [
 # Load all historical seasons
 files = sorted(DATA_DIR.glob("E0*.csv"))
 
+if not files:
+    raise FileNotFoundError(f"No CSV files found in {DATA_DIR}")
+
 matches = []
 
 for file in files:
     df = pd.read_csv(file)
 
+    df["Date"] = pd.to_datetime(
+        df["Date"],
+        dayfirst=True,
+        errors="coerce"
+    )
+
     # Keep only relevant columns
+    missing_columns = [col for col in columns if col not in df.columns]
+
+    if missing_columns:
+        raise ValueError(f"{file.name} is missing columns: {missing_columns}")
+
     df = df[columns]
+
+    # Remove rows without actual match results
+    df = df.dropna(subset=["HomeTeam", "AwayTeam", "FTHG", "FTAG", "FTR"])
 
     matches.append(df)
 
 # Combine seasons
 data = pd.concat(matches, ignore_index=True)
-
-# Convert dates
-data["Date"] = pd.to_datetime(
-    data["Date"],
-    format="%d/%m/%Y",
-    errors="coerce"
-)
 
 # Sort chronologically
 data = data.sort_values("Date").reset_index(drop=True)

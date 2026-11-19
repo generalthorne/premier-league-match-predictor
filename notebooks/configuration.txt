@@ -1,0 +1,43 @@
+### Final model settings
+
+- Training window: 7 seasons
+- Learning rate: 0.05
+- Max depth: 2
+- Number of trees: 100 (best result in testing)
+
+**Seven-season evaluation:**
+- Mean accuracy: 52.65%
+- Overall accuracy: 52.67%
+- Mean log loss: 0.9853
+- Overall log loss: 0.9862
+
+**Why these settings?**
+- 0.05 gave the best log loss among the tested learning rates for the seven-season window.
+- Depth 2 performed well with the selected configuration.
+- 100 trees outperformed the other tree counts tested.
+
+These settings are now selected for the final 2025–26 test.
+
+
+
+
+its performance:
+Training Window Comparison:
+ WindowSize  MeanAccuracy  AccuracyStd  MeanLogLoss  LogLossStd  OverallAccuracy  OverallLogLoss
+          2        0.5220       0.0309       1.0033      0.0434           0.5222          1.0037
+          3        0.5258       0.0413       0.9968      0.0447           0.5259          0.9973
+          4        0.5335       0.0343       0.9905      0.0452           0.5331          0.9914
+          5        0.5207       0.0355       0.9892      0.0435           0.5203          0.9901
+          6        0.5263       0.0352       0.9872      0.0410           0.5263          0.9879
+          7        0.5265       0.0346       0.9853      0.0413           0.5267          0.9862
+          8        0.5276       0.0372       0.9878      0.0401           0.5274          0.9885
+
+
+Testing 7-season training window
+  2018-2019: Accuracy = 0.5842, Log Loss = 0.9166
+  2019-2020: Accuracy = 0.5000, Log Loss = 0.9960
+  2020-2021: Accuracy = 0.5067, Log Loss = 1.0310
+  2021-2022: Accuracy = 0.5263, Log Loss = 0.9816
+  2022-2023: Accuracy = 0.5263, Log Loss = 0.9957
+  2023-2024: Accuracy = 0.5579, Log Loss = 0.9481
+  2024-2025: Accuracy = 0.4842, Log Loss = 1.0282

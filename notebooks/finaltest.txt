@@ -1,0 +1,23 @@
+Final Test — 2025–26
+Model settings
+- Training window: 7 seasons (2018–19 to 2024–25)
+- Training matches: 2,660
+- Testing matches: 380
+- Learning rate: 0.05
+- Max depth: 2
+- Number of trees: 100
+Results
+- Accuracy: 47.37%
+- Log loss: 1.0380
+Classification results
+- Home wins: 123 / 162 correctly predicted
+- Draws: 0 / 104 correctly predicted
+- Away wins: 57 / 114 correctly predicted
+Observations
+- Accuracy was noticeably lower than the 52.67% achieved during validation.
+- The model failed to predict a single draw.
+- Home wins were predicted most successfully, while draws were the biggest weakness.
+- Log loss increased from 0.9862 during validation to 1.0380 on the final test.
+Conclusion
+
+The model performed worse on the unseen 2025–26 season than it did during validation. This highlights the difficulty of generalizing football predictions across seasons, particularly when predicting draws. The final test provides a realistic baseline for the model's performance on future matches.
